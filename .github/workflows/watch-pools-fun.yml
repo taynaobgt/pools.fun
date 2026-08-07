@@ -23,7 +23,7 @@
 name: Watch pools.fun
 
 on:
-# cron re-registered 2026-08-03
+# cron re-registered 2026-08-07
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch: {}
