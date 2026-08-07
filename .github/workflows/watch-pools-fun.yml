@@ -1,0 +1,70 @@
+# File nay can dat tai: .github/workflows/watch-pools-fun.yml trong repo GitHub cua ban
+# (Neu dung CHUNG 1 repo voi bot pools.trade truoc do, hay dat ten repo/thu muc
+#  khac, hoac dung 1 repo MOI rieng cho pools.fun de tranh dam file/state.json)
+#
+# Cau truc repo can co:
+#   your-repo/
+#   ├── .github/workflows/watch-pools-fun.yml   <- file nay
+#   ├── watch.py                                 <- script single-run
+#   └── state.json                               <- de trong noi dung {}
+#
+# Thiet lap:
+# 1. Tao 1 repo GitHub moi (rieng cho pools.fun, khong dung chung voi repo pools.trade)
+# 2. Copy file nay vao:  .github/workflows/watch-pools-fun.yml
+# 3. Copy watch.py vao thu muc goc repo
+# 4. Tao file state.json o thu muc goc, noi dung: {}
+# 5. Settings -> Secrets and variables -> Actions -> New repository secret:
+#      TELEGRAM_BOT_TOKEN = <token bot cua ban>
+#      TELEGRAM_CHAT_ID   = <chat id cua ban>
+#    (co the dung CHUNG bot Telegram voi pools.trade, khong sao ca - chi can chat_id dung)
+# 6. Settings -> Actions -> General -> Workflow permissions -> "Read and write permissions"
+# 7. Commit & push, vao tab Actions -> Run workflow de chay thu
+
+name: Watch pools.fun
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: watch-pools-fun
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run watcher
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          WATCH_URL: "https://pools.fun/"
+          STATUS_REPORT_INTERVAL_MINUTES: "60"
+        run: python watch.py
+
+      - name: Commit updated state (neu co thay doi)
+        run: |
+          git config user.name "pools-fun-watcher-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if [ -n "$(git status --porcelain state.json)" ]; then
+            git add state.json
+            git commit -m "chore: update watcher state [skip ci]"
+            git push
+          else
+            echo "Khong co thay doi state.json, bo qua commit."
+          fi
