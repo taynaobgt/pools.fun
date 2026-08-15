@@ -1,7 +1,8 @@
 {
-  "hash": "1fb956a18af7bb4041c24b237fa7fe4b8afa67a0275e207eeb3c25158f924528",
-  "coming_soon": true,
-  "last_checked": "2026-08-15T18:51:16.286433+00:00",
+  "hash": "b3e66a306072e99d2e2ccc2676c79508a05daff927813e51dcc56b1046fea61c",
+  "coming_soon": false,
+  "last_checked": "2026-08-15T19:16:41.297419+00:00",
   "last_status_code": 200,
-  "last_report_ts": 1786819876.2864406
+  "last_report_ts": 1786819876.2864406,
+  "last_changed_ts": 1786821401.2974172
 }
